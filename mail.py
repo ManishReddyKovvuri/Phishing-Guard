@@ -5,7 +5,7 @@ import socket
 
 # Account credentials
 username = "phishguard.safe@gmail.com"
-password = "kqfe scnl qbbb vfdo"
+password = ""
 imap_server = "imap.gmail.com"
 
 # Connect to the server
