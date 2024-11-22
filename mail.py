@@ -7,7 +7,7 @@ from GetUrls import getUrls, add_urls_to_dict
 
 # Account credentials
 username = "phishguard.safe@gmail.com"
-password = "kqfe scnl qbbb vfdo"
+password = ""
 imap_server = "imap.gmail.com"
 
 # Connect to the server
