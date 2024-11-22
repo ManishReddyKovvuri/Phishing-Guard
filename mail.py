@@ -2,10 +2,17 @@ import imaplib
 import email
 from email.header import decode_header
 import socket
+from detection import fake_detect
+from GetUrls import parse_email
 
 # Account credentials
+<<<<<<< HEAD
 username = "phishguard.safe@gmail.com"#TODO
 password = ""
+=======
+username = "manishrk2120@gmail.com"
+password = "kdtn aqyl ofwe tddb"
+>>>>>>> e0e7a5068024befa80ba835c66091ec284d288ee
 imap_server = "imap.gmail.com"
 
 # Connect to the server
@@ -30,41 +37,12 @@ try:
     
     # Fetch the email by ID
     status, msg_data = mail.fetch(latest_email_id, "(RFC822)")
+
+
     
     # Parse the email content
-    for response_part in msg_data:
-        if isinstance(response_part, tuple):
-            msg = email.message_from_bytes(response_part[1])
-            subject, encoding = decode_header(msg["Subject"])[0]
-            if isinstance(subject, bytes):
-                subject = subject.decode(encoding if encoding else "utf-8")
-            from_ = msg.get("From")
-            print("Subject:", subject)
-            print("From:", from_)
+    parse_email(msg_data)
     
-            # If the email message is multipart
-            if msg.is_multipart():
-                for part in msg.walk():
-                    content_type = part.get_content_type()
-                    content_disposition = str(part.get("Content-Disposition"))
-    
-                    try:
-                        body = part.get_payload(decode=True).decode()
-                    except:
-                        pass
-    
-                    if content_type == "text/plain" and "attachment" not in content_disposition:
-                        print("Body:", body)
-                    elif "attachment" in content_disposition:
-                        filename = part.get_filename()
-                        if filename:
-                            with open(filename, "wb") as f:
-                                f.write(part.get_payload(decode=True))
-            else:
-                content_type = msg.get_content_type()
-                body = msg.get_payload(decode=True).decode()
-                if content_type == "text/plain":
-                    print("Body:", body)
     
     # Close the connection and logout
     mail.close()
