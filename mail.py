@@ -6,13 +6,8 @@ from detection import fake_detect
 from GetUrls import parse_email
 
 # Account credentials
-<<<<<<< HEAD
-username = "phishguard.safe@gmail.com"#TODO
-password = ""
-=======
-username = "manishrk2120@gmail.com"
-password = "kdtn aqyl ofwe tddb"
->>>>>>> e0e7a5068024befa80ba835c66091ec284d288ee
+username = "--"
+password = "--"
 imap_server = "imap.gmail.com"
 
 # Connect to the server
