@@ -11,7 +11,7 @@ import pandas as pd
 
 
 class Config(object):
-    OPEN_PAGE_RANK_API_KEY = os.environ.get("OPEN_PAGE_RANK_API_KEY", "--") # load api key from config file
+    OPEN_PAGE_RANK_API_KEY = os.environ.get("OPEN_PAGE_RANK_API_KEY", "--") #TODO load api key from config file
     API_KEY = os.environ.get("API_KEY", "test")
 
 
