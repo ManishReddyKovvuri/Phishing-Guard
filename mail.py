@@ -4,7 +4,7 @@ from email.header import decode_header
 import socket
 
 # Account credentials
-username = "phishguard.safe@gmail.com"
+username = "phishguard.safe@gmail.com"#TODO
 password = ""
 imap_server = "imap.gmail.com"
 
