@@ -21,12 +21,6 @@ def get_redirected_url(url):
     # Open a website
     driver.get("https://www.google.com")
 
-    # Print the page title to verify
-    print("Page title is:", driver.title)
-
-    #url="https://toptier-cleaners.com/"
-
-    print (url)
     try:
             driver.get(url)
             # Wait until page is loaded to a reasonable state (you can adjust this as necessary)
