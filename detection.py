@@ -69,4 +69,4 @@ fake_detection_input = FakeDetectionIn(
     text= "http://usaa.fmvela.mx"
 )
 
-fake_detect(fake_detection_input)
+#fake_detect(fake_detection_input)
