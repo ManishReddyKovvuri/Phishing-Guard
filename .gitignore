@@ -1,1 +1,2 @@
-config.txt
+__pycache__/
+venv/*
