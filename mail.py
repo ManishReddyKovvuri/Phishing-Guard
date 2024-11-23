@@ -4,10 +4,13 @@ from email.header import decode_header
 import socket
 from detection import fake_detect
 from GetUrls import parse_email
+from helpers.url_helper import load_config
 
+
+config =load_config()
 # Account credentials
-username = "--"
-password = "--"
+username = config.get("EMAIL")
+password = config.get("PASS_KEY")
 imap_server = "imap.gmail.com"
 
 # Connect to the server
@@ -36,7 +39,8 @@ try:
 
     
     # Parse the email content
-    parse_email(msg_data)
+    report = parse_email(msg_data)
+    print(report)
     
     
     # Close the connection and logout
