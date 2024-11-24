@@ -61,12 +61,40 @@ def fake_detect(uuid_text: FakeDetectionIn):
     response = FakeDetectionResponse.parse_obj(_dict)
     return (response)
 
+def provide_recommendations(response: dict) -> list:
+    recommendations = []
 
+    features = response.features
+    ssl_cert = response.ssl_cert
+    isSSLAvailable = ssl_cert.isSSLAvailable
+    model_prediction = response.ModelPrediction
 
+    if features.length_url > 100:
+        recommendations.append("The URL is very long, which can be suspicious.")
+    if features.nb_eq > 3:
+        recommendations.append("The URL has multiple '=' characters, which can indicate phishing.")
+    if features.ratio_digits_url > 0.2:
+        recommendations.append("The URL has a high ratio of digits, which can be suspicious.")
+    if not isSSLAvailable:
+        recommendations.append("The URL does not have a valid SSL certificate.")
+    if features.domain_age < 365:
+        recommendations.append("The domain is less than a year old, which can be a red flag.")
+    if features.page_rank == 0.0:
+        recommendations.append("The URL has a low page rank, indicating it might be untrustworthy.")
+    if model_prediction == 'Fake':
+        recommendations.append("The machine learning model predicts this URL to be fake.")
+    
+    if not recommendations:
+        recommendations.append("The URL appears to be safe based on the analyzed features.")
+    
+    return recommendations
 
 fake_detection_input = FakeDetectionIn(
     uuid= 'e4eaaaf2c9b648b3b0e4b5b4b3a9a2bb',  # Generate a new UUID
-    text= "http://usaa.fmvela.mx"
-)
+    text= "https://www.youtube.com/watch?v=23yVLxPvRfY")
 
-#fake_detect(fake_detection_input)
+result=fake_detect(fake_detection_input)
+
+recommendations = provide_recommendations(result)
+for rec in recommendations:
+    print(rec)
