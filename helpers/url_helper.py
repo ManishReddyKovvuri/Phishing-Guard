@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 import urllib
 import re
 import requests
+import json,os  
 
 
 
@@ -27,19 +28,31 @@ def get_domain_age(domain_name: str) -> int:
     except Exception as e:
         # Return -1 if domain age is not available
         return -1
-
+def load_config():
+    file_name = "config.json"
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(current_dir, "..", file_name)
+    try:
+        with open(config_path, "r") as file:
+           return  json.load(file)
+    except FileNotFoundError:
+        print(f"Error: The file {config_path} was not found.")
+        return{}
+    except json.JSONDecodeError:
+        print(f"Error: The file {config_path} is not a valid JSON file.")
+        return{}
 
 def page_rank(url: str) -> int:
     o = urllib.parse.urlsplit(url)
     url_to_check = o[1]
-
+    config = load_config()
     # Make a GET request to the Open PageRank API
     url1 = 'https://openpagerank.com/api/v1.0/getPageRank'
     params = {
         'domains[]': url_to_check
     }
     headers = {
-        'API-OPR': 'g8owgw8sow0ko0ks88kskck4k8so08sgc4gckgkw'#TODO
+        'API-OPR': config.get('API_OPR')
     }
 
     response = requests.get(url1, params=params, headers=headers)
