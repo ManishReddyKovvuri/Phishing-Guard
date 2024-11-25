@@ -61,12 +61,8 @@ try:
 
     
     # Parse the email content
-<<<<<<< HEAD
-    print (parse_email(msg_data))
-=======
     report = parse_email(msg_data)
     print(report)
->>>>>>> ea3b315d11b7c2f2d02c875b6b009b6b9af21d28
     
     
     # Close the connection and logout
