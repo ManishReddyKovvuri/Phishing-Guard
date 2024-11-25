@@ -9,11 +9,6 @@ from helpers.url_helper import load_config
 
 config =load_config()
 # Account credentials
-<<<<<<< HEAD
-username = ""
-password = ""
-imap_server = "imap.mail.me.com"
-=======
 username = config.get("EMAIL")
 password = config.get("PASS_KEY")
 imap_server = "imap.gmail.com"

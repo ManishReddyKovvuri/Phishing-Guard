@@ -10,9 +10,6 @@ import pandas as pd
 
 
 
-class Config(object):
-    OPEN_PAGE_RANK_API_KEY = os.environ.get("OPEN_PAGE_RANK_API_KEY", "--") #TODO load api key from config file
-    API_KEY = os.environ.get("API_KEY", "test")
 
 
 def fake_detect(uuid_text: FakeDetectionIn):
@@ -59,6 +56,7 @@ def fake_detect(uuid_text: FakeDetectionIn):
 
     _dict["ModelPrediction"] = "Legit Site" if _pred == 0 else "Fake"
     response = FakeDetectionResponse.parse_obj(_dict)
+    response.provide_recommendations()
     return (response)
 
 def provide_recommendations(response: dict) -> list:
