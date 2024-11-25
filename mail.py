@@ -60,9 +60,25 @@ try:
     print(report)
     
     
-    # Close the connection and logout
-    mail.close()
-    mail.logout()
+    
+    
+    # # Close the connection and logout
+    # mail.close()
+    # mail.logout()
+    
+    icloudemail = ICloudEmail()
+    icloudemail.from_address ="--@gmail.com"
+    icloudemail.subject = " babai"
+    icloudemail.body = "https://www.youtube.com/watch?v=23yVLxPvRfY, ahfdsgkajgflasfg  https://mail.google.com/mail/u/0/#inbox "# parse_email
+
+    print("="*50)
+    icloudemail.urls_found["URLs"] = getUrls(icloudemail.body)
+    for i in icloudemail.urls_found["URLs"] :
+        icloudemail.urls_found["report"].append(fake_detect(i))
+    
+    responsebody= generate_response_body(icloudemail)
+
+   
 
 except imaplib.IMAP4.error as e:
     print("IMAP error:", e)
