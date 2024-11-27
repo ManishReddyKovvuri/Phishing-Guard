@@ -68,6 +68,79 @@ def parse_email(msg_data):
                     # for i in url_dict:
                     #     url_dict[i] = fake_detect(FakeDetectionIn(uuid= 'e4eaaaf2c9b648b3b0e4b5b4b3a9a2bb', text= i))
                     # return url_dict
+def read_unread_emails(mail):
+    """Fetch and read only unread emails from the inbox."""
+    try:
+        unread_emails = []
+        mail.select("inbox")  # Select the inbox
+        # Search for unread emails
+        status, messages = mail.search(None, "UNSEEN")
+        email_ids = messages[0].split()
+
+        print(f"Unread emails: {len(email_ids)}")
+
+        if not email_ids:
+            print("No unread emails found.")
+            return unread_emails
+
+        # Iterate through email IDs
+        for email_id in email_ids:
+            icloudemail = ICloudEmail()
+            email_id = email_id.decode()  # Decode the email ID
+            print(f"Fetching email ID: {email_id}")
+
+            # Fetch the full email content
+            status, msg_data = mail.fetch(email_id, "(BODY[])")
+            print(f"Status: {status}, Msg Data Raw: {msg_data}")
+
+            # Handle empty responses
+            if not msg_data or msg_data[0] == b'' or b'()' in msg_data[0]:
+                print(f"No content found for email ID {email_id}. Skipping.")
+            
+
+            raw_email = b''
+            for response_part in msg_data:
+                if isinstance(response_part, bytes):
+                    raw_email += response_part
+                elif isinstance(response_part, tuple):
+                    raw_email += response_part[1]
+
+            if not raw_email:
+                print(f"No content found for email ID {email_id}. Skipping.")
+                
+
+            # Parse the email
+            msg = email.message_from_bytes(raw_email)
+
+            # Decode headers and body
+            subject, encoding = decode_header(msg["Subject"])[0]
+            if isinstance(subject, bytes):
+                subject = subject.decode(encoding if encoding else "utf-8")
+            from_ = msg.get("From")
+            print("/=\//" * 50)
+            print(f"Subject: {subject}")
+            print(f"From: {from_}")
+
+            # Decode the body
+            if msg.is_multipart():
+                for part in msg.walk():
+                    content_type = part.get_content_type()
+                    content_disposition = str(part.get("Content-Disposition"))
+
+                    if content_type == "text/plain" and "attachment" not in content_disposition:
+                        body = part.get_payload(decode=True).decode(errors='replace')
+                        print(f"Body:\n{body}\n")
+            else:
+                body = msg.get_payload(decode=True).decode(errors='replace')
+                print(f"Body:\n{body}\n")
+            icloudemail.body =body
+            icloudemail.from_address =from_
+            icloudemail.subject = subject
+            unread_emails.append(icloudemail)
+            print("=" * 50)
+        return unread_emails
+    except Exception as e:
+        print(f"Error reading emails: {e}")
 
 def generate_response_body(icloud_email: ICloudEmail) -> str:
     """
