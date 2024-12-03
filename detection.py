@@ -14,38 +14,38 @@ import pandas as pd
 
 def fake_detect(uuid_text: FakeDetectionIn):
     try :
-    url_pattern = r"https?://\S+|www\.\S+|ftp://\S+|\S+\.\S+/\S+"
-    uuid_text.text = re.findall(url_pattern, uuid_text.text)
-    if uuid_text.text is None:
-        raise HTTPException(status_code=404, detail={"Could not find URL in the text you sent"})
-    uuid_text.text = uuid_text.text[0]
-    _dict = {}
-    _dict["original_url"] = str(uuid_text.text)
-    check, _original_url = get_redirected_url(str(uuid_text.text))
-    if _original_url == "data:,":
-        _original_url = uuid_text.text
-    if not check:
-        print(f"Selenium Could not load the Site 😞'{uuid_text.text}'")
-        _original_url = uuid_text.text
-    print(f"Redirect Found : '{uuid_text.text}'")
-    _dict["long_url"] = _original_url 
-    parsed_hostname = urlparse(_original_url).netloc
-    parsed_port = urlparse(_original_url).port
-    if parsed_port is None:
-        parsed_port = 443
-    check, err, cert = get_ssl_certificate(parsed_hostname, parsed_port, timeout=10)
-    _dict["ssl_cert"] = {
-        "isSSLAvailable": check,
-        "SSLPullError": err,
-        "Certificate": cert
-    }
-    if cert is not None:
-        _dict["ssl_cert"]["Certificate"]["notBefore"] = _dict["ssl_cert"]["Certificate"]["notBefore"].strftime('%m/%d/%Y')
-        _dict["ssl_cert"]["Certificate"]["notAfter"] = _dict["ssl_cert"]["Certificate"]["notAfter"].strftime('%m/%d/%Y')
+        url_pattern = r"https?://\S+|www\.\S+|ftp://\S+|\S+\.\S+/\S+"
+        uuid_text.text = re.findall(url_pattern, uuid_text.text)
+        if uuid_text.text is None:
+            raise HTTPException(status_code=404, detail={"Could not find URL in the text you sent"})
+        uuid_text.text = uuid_text.text[0]
+        _dict = {}
+        _dict["original_url"] = str(uuid_text.text)
+        check, _original_url = get_redirected_url(str(uuid_text.text))
+        if _original_url == "data:,":
+            _original_url = uuid_text.text
+        if not check:
+            print(f"Selenium Could not load the Site 😞'{uuid_text.text}'")
+            _original_url = uuid_text.text
+        print(f"Redirect Found : '{uuid_text.text}'")
+        _dict["long_url"] = _original_url 
+        parsed_hostname = urlparse(_original_url).netloc
+        parsed_port = urlparse(_original_url).port
+        if parsed_port is None:
+            parsed_port = 443
+        check, err, cert = get_ssl_certificate(parsed_hostname, parsed_port, timeout=10)
+        _dict["ssl_cert"] = {
+            "isSSLAvailable": check,
+            "SSLPullError": err,
+            "Certificate": cert
+        }
+        if cert is not None:
+            _dict["ssl_cert"]["Certificate"]["notBefore"] = _dict["ssl_cert"]["Certificate"]["notBefore"].strftime('%m/%d/%Y')
+            _dict["ssl_cert"]["Certificate"]["notAfter"] = _dict["ssl_cert"]["Certificate"]["notAfter"].strftime('%m/%d/%Y')
 
-    
-    _features = extract_url_features(_original_url)
-    _dict["features"] = _features
+        
+        _features = extract_url_features(_original_url)
+        _dict["features"] = _features
 
     _dict["host_name"] = parsed_hostname
     _dict["port"] = parsed_port

@@ -150,19 +150,19 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
     :return: A string representing the email body.
     """
     try :
-    # Initialize the email body
-    response_body = f"Subject: {icloud_email.subject}\n"
-    response_body += f"From: {icloud_email.from_address}\n\n"
-    response_body += f"Hello,\n\nWe have analyzed the email body and found the following results:\n\n"
+        # Initialize the email body
+        response_body = f"Subject: {icloud_email.subject}\n"
+        response_body += f"From: {icloud_email.from_address}\n\n"
+        response_body += f"Hello,\n\nWe have analyzed the email body and found the following results:\n\n"
 
-    if not icloud_email.urls_found["URLs"]:
-        response_body += "No URLs were found in the email body. The content seems safe.\n"
-    else:
-        response_body += f"We identified {len(icloud_email.urls_found['URLs'])} link(s) in the email body:\n\n"
-        
-        for i, (url, report) in enumerate(zip(icloud_email.urls_found["URLs"], icloud_email.urls_found["report"]), start=1):
-            # Generate recommendations for the current URL
-            report.provide_recommendations()
+        if not icloud_email.urls_found["URLs"]:
+            response_body += "No URLs were found in the email body. The content seems safe.\n"
+        else:
+            response_body += f"We identified {len(icloud_email.urls_found['URLs'])} link(s) in the email body:\n\n"
+            
+            for i, (url, report) in enumerate(zip(icloud_email.urls_found["URLs"], icloud_email.urls_found["report"]), start=1):
+                # Generate recommendations for the current URL
+                report.provide_recommendations()
 
             # Add URL details to the response body
             response_body += f"Link {i}: {url}\n"

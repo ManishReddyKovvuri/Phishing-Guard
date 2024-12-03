@@ -10,10 +10,10 @@ from helpers.models import ICloudEmail
 
 
 try:
-config =load_config()
-# Account credentials
-username = config.get("EMAIL")
-password = config.get("PASS_KEY")
+    config =load_config()
+    # Account credentials
+    username = config.get("EMAIL")
+    password = config.get("PASS_KEY")
     imap_server = "imap.icloud.com"
 
     mail = imaplib.IMAP4_SSL(imap_server)
