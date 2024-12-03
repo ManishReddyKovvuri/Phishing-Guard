@@ -164,31 +164,31 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
                 # Generate recommendations for the current URL
                 report.provide_recommendations()
 
-            # Add URL details to the response body
-            response_body += f"Link {i}: {url}\n"
-            response_body += f"    Expanded URL: {report.long_url}\n"
-            response_body += f"    SSL Certificate: {'Valid' if report.ssl_cert.isSSLAvailable else 'Invalid'}\n"
-            response_body += f"    Host Name: {report.host_name}\n"
-            response_body += f"    Port: {report.port}\n"
-            response_body += f"    Model Prediction: {report.ModelPrediction}\n"
-            response_body += f"    Security Features:\n"
-            response_body += f"        URL Length: {report.features.length_url}\n"
-            response_body += f"        '=' Characters: {report.features.nb_eq}\n"
-            response_body += f"        Digit Ratio: {report.features.ratio_digits_url}\n"
-            response_body += f"        Domain Age: {report.features.domain_age} days\n"
-            response_body += f"        Page Rank: {report.features.page_rank}\n\n"
+                # Add URL details to the response body
+                response_body += f"Link {i}: {url}\n"
+                response_body += f"    Expanded URL: {report.long_url}\n"
+                response_body += f"    SSL Certificate: {'Valid' if report.ssl_cert.isSSLAvailable else 'Invalid'}\n"
+                response_body += f"    Host Name: {report.host_name}\n"
+                response_body += f"    Port: {report.port}\n"
+                response_body += f"    Model Prediction: {report.ModelPrediction}\n"
+                response_body += f"    Security Features:\n"
+                response_body += f"        URL Length: {report.features.length_url}\n"
+                response_body += f"        '=' Characters: {report.features.nb_eq}\n"
+                response_body += f"        Digit Ratio: {report.features.ratio_digits_url}\n"
+                response_body += f"        Domain Age: {report.features.domain_age} days\n"
+                response_body += f"        Page Rank: {report.features.page_rank}\n\n"
 
-            # Add recommendations for the URL
-            response_body += f"    Recommendations:\n"
-            for recommendation in report.Recommendation:
-                response_body += f"        - {recommendation}\n"
-            response_body += "\n"
-    
-    response_body += "Thank you for using our phishing detection service.\n"
-    response_body += "Stay safe,\nThe Phishing Guard Team"
+                # Add recommendations for the URL
+                response_body += f"    Recommendations:\n"
+                for recommendation in report.Recommendation:
+                    response_body += f"        - {recommendation}\n"
+                response_body += "\n"
+        
+        response_body += "Thank you for using our phishing detection service.\n"
+        response_body += "Stay safe,\nThe Phishing Guard Team"
 
-    # Assign the generated response to the email body attribute
-    icloud_email.response_email_body = response_body
-    return response_body
+        # Assign the generated response to the email body attribute
+        icloud_email.response_email_body = response_body
+        return response_body
     except :
         return False

@@ -47,18 +47,18 @@ def fake_detect(uuid_text: FakeDetectionIn):
         _features = extract_url_features(_original_url)
         _dict["features"] = _features
 
-    _dict["host_name"] = parsed_hostname
-    _dict["port"] = parsed_port
-    X = pd.DataFrame(_features, index=[0]).iloc[:, :].values
-    with open(MODEL_DIR, 'rb') as model:
-        _model = pickle.load(model)
-    _pred = _model.predict(X)
+        _dict["host_name"] = parsed_hostname
+        _dict["port"] = parsed_port
+        X = pd.DataFrame(_features, index=[0]).iloc[:, :].values
+        with open(MODEL_DIR, 'rb') as model:
+            _model = pickle.load(model)
+        _pred = _model.predict(X)
 
 
-    _dict["ModelPrediction"] = "Legit Site" if _pred == 0 else "Fake"
-    response = FakeDetectionResponse.parse_obj(_dict)
-    response.provide_recommendations()
-    return (response)
+        _dict["ModelPrediction"] = "Legit Site" if _pred == 0 else "Fake"
+        response = FakeDetectionResponse.parse_obj(_dict)
+        response.provide_recommendations()
+        return (response)
     except Exception as e:
         return False
     
