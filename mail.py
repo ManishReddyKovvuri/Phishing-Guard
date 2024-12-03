@@ -3,7 +3,7 @@ import email
 from email.header import decode_header
 import socket
 from detection import fake_detect
-from GetUrls import parse_email, getUrls, add_urls_to_dict, generate_response_body, read_unread_emails
+from GetUrls import parse_email, getUrls,check_for_unread, add_urls_to_dict, generate_response_body, read_unread_emails
 from helpers.url_helper import load_config
 from helpers.models import ICloudEmail
 
@@ -14,19 +14,24 @@ try:
     # Account credentials
     username = config.get("EMAIL")
     password = config.get("PASS_KEY")
-    imap_server = "imap.icloud.com"
+    imap_server = "imap.mail.me.com"
+
+    unread_email_found = False #set to true to check
 
     mail = imaplib.IMAP4_SSL(imap_server)
     mail.login(username, password) # Connect to the server
 
-    
-    
-    
+    unread_emails = check_for_unread(mail)
+    if not unread_emails:
+        print("No unread emails found. Ending execution.")
+        raise Exception("No unread emails found. Ending execution.")
+        
+    response_emails = {email.from_address: False for email in unread_emails}
     
 
+
     
-    unread_emails = read_unread_emails(mail) #list of ICloudEmail Objects 
-    response_emails = {email.from_address: False for email in unread_emails}
+    
     for email in unread_emails :
     # icloudemail = ICloudEmail()
     # icloudemail.from_address ="--@gmail.com"

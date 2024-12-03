@@ -68,80 +68,105 @@ def parse_email(msg_data):
                     # for i in url_dict:
                     #     url_dict[i] = fake_detect(FakeDetectionIn(uuid= 'e4eaaaf2c9b648b3b0e4b5b4b3a9a2bb', text= i))
                     # return url_dict
-def read_unread_emails(mail):
-    """Fetch and read only unread emails from the inbox."""
+
+def check_for_unread(mail):
+    """Check for unread emails and return a list of email objects."""
     try:
-        unread_emails = []
         mail.select("inbox")  # Select the inbox
-        # Search for unread emails
         status, messages = mail.search(None, "UNSEEN")
-        email_ids = messages[0].split()
-
-        print(f"Unread emails: {len(email_ids)}")
-
-        if not email_ids:
+        if messages == [b'']:  # No unread emails
             print("No unread emails found.")
-            return unread_emails
+            return []
 
-        # Iterate through email IDs
+        email_ids = messages[0].split()
+        unread_emails = []
         for email_id in email_ids:
-            icloudemail = ICloudEmail()
-            email_id = email_id.decode()  # Decode the email ID
-            print(f"Fetching email ID: {email_id}")
+            email_obj = read_unread_emails(mail=mail, email_id=email_id)
+            if email_obj:  # Only append if processing succeeded
+                unread_emails.append(email_obj)
+        return unread_emails
 
-            # Fetch the full email content
-            status, msg_data = mail.fetch(email_id, "(BODY[])")
-            print(f"Status: {status}, Msg Data Raw: {msg_data}")
+    except Exception as e:
+        print(f"Error in checking for unread emails: {e}")
+        return []
 
-            # Handle empty responses
-            if not msg_data or msg_data[0] == b'' or b'()' in msg_data[0]:
-                print(f"No content found for email ID {email_id}. Skipping.")
-            
+def read_unread_emails(mail, email_id):
+    """Fetch and read a single unread email."""
+    try:
+        email_id = email_id.decode()  # Decode the email ID
+        print(f"Fetching email ID: {email_id}")
 
-            raw_email = b''
-            for response_part in msg_data:
-                if isinstance(response_part, bytes):
-                    raw_email += response_part
-                elif isinstance(response_part, tuple):
-                    raw_email += response_part[1]
+        # Fetch the full email content
+        status, msg_data = mail.fetch(email_id, "(BODY[])")
+        if not msg_data or msg_data[0] == b'' or b'()' in msg_data[0]:
+            print(f"No content found for email ID {email_id}. Skipping.")
+            return False
 
-            if not raw_email:
-                print(f"No content found for email ID {email_id}. Skipping.")
-                
+        raw_email = b''.join(
+            response_part[1] for response_part in msg_data if isinstance(response_part, tuple)
+        )
 
-            # Parse the email
-            msg = email.message_from_bytes(raw_email)
+        if not raw_email:
+            print(f"No content found for email ID {email_id}. Skipping.")
+            return False
 
-            # Decode headers and body
-            subject, encoding = decode_header(msg["Subject"])[0]
-            if isinstance(subject, bytes):
-                subject = subject.decode(encoding if encoding else "utf-8")
-            from_ = msg.get("From")
-            print("/=\//" * 50)
-            print(f"Subject: {subject}")
-            print(f"From: {from_}")
+        # Parse the email
+        msg = email.message_from_bytes(raw_email)
 
-            # Decode the body
+        # Decode the subject
+        try:
+            subject_raw = msg.get("Subject")
+            if subject_raw:
+                subject, encoding = decode_header(subject_raw)[0]
+                if isinstance(subject, bytes):
+                    subject = subject.decode(encoding if encoding else "utf-8")
+            else:
+                subject = "(No Subject)"
+        except Exception as e:
+            print(f"Error decoding subject for email {email_id}: {e}")
+            subject = "(Error Reading Subject)"
+
+        # Decode the from address
+        try:
+            from_address = msg.get("From") or "(Unknown Sender)"
+        except Exception as e:
+            print(f"Error decoding 'From' address for email {email_id}: {e}")
+            from_address = "(Error Reading Sender)"
+
+        # Decode the body
+        try:
+            body = ""
             if msg.is_multipart():
                 for part in msg.walk():
                     content_type = part.get_content_type()
                     content_disposition = str(part.get("Content-Disposition"))
-
                     if content_type == "text/plain" and "attachment" not in content_disposition:
                         body = part.get_payload(decode=True).decode(errors='replace')
-                        print(f"Body:\n{body}\n")
+                        break
             else:
                 body = msg.get_payload(decode=True).decode(errors='replace')
-                print(f"Body:\n{body}\n")
-            icloudemail.body =body
-            icloudemail.from_address =from_
-            icloudemail.subject = subject
-            unread_emails.append(icloudemail)
-            print("=" * 50)
-        return unread_emails
+            if not body:
+                body = "(No Body Content)"
+        except Exception as e:
+            print(f"Error decoding body for email {email_id}: {e}")
+            body = "(Error Reading Body)"
+
+        print("/=\//" * 50)
+        print(f"Subject: {subject}")
+        print(f"From: {from_address}")
+        print(f"Body:\n{body}\n")
+        print("=" * 50)
+
+        # Create and return the email object
+        icloudemail = ICloudEmail()
+        icloudemail.body = body
+        icloudemail.subject = subject
+        icloudemail.from_address = from_address
+        return icloudemail
+
     except Exception as e:
-        print(f"Error reading emails: {e}")
-        return unread_emails
+        print(f"Error reading email {email_id}: {e}")
+        return False
 
 def generate_response_body(icloud_email: ICloudEmail) -> str:
     """
