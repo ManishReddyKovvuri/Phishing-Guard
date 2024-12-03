@@ -13,6 +13,7 @@ import pandas as pd
 
 
 def fake_detect(uuid_text: FakeDetectionIn):
+    try :
     url_pattern = r"https?://\S+|www\.\S+|ftp://\S+|\S+\.\S+/\S+"
     uuid_text.text = re.findall(url_pattern, uuid_text.text)
     if uuid_text.text is None:
@@ -58,11 +59,16 @@ def fake_detect(uuid_text: FakeDetectionIn):
     response = FakeDetectionResponse.parse_obj(_dict)
     response.provide_recommendations()
     return (response)
+    except Exception as e:
+        return False
+    
+    
 
 
 fake_detection_input = FakeDetectionIn(
     uuid= 'e4eaaaf2c9b648b3b0e4b5b4b3a9a2bb',  # Generate a new UUID
     text= "https://www.youtube.com/watch?v=23yVLxPvRfY")
 
-result=fake_detect(fake_detection_input)
+# result=fake_detect(fake_detection_input)
+# recommendations = provide_recommendations(result)
 

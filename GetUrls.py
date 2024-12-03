@@ -141,6 +141,7 @@ def read_unread_emails(mail):
         return unread_emails
     except Exception as e:
         print(f"Error reading emails: {e}")
+        return unread_emails
 
 def generate_response_body(icloud_email: ICloudEmail) -> str:
     """
@@ -148,6 +149,7 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
     :param icloud_email: An instance of ICloudEmail containing URLs and reports.
     :return: A string representing the email body.
     """
+    try :
     # Initialize the email body
     response_body = f"Subject: {icloud_email.subject}\n"
     response_body += f"From: {icloud_email.from_address}\n\n"
@@ -188,4 +190,5 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
     # Assign the generated response to the email body attribute
     icloud_email.response_email_body = response_body
     return response_body
-
+    except :
+        return False
