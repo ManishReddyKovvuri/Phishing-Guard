@@ -7,7 +7,7 @@ from helpers.models import FakeDetectionIn,FakeDetectionResponse, ICloudEmail
 
 def getUrls(text):
     # Regular expression to match URLs
-    url_pattern = re.compile(r'https?://[^\s]+')
+    url_pattern = re.compile(r'https?://[^\s]+') #TODO r"https?://\S+|www\.\S+|ftp://\S+|\S+\.\S+/\S+" 
     urls = url_pattern.findall(text)
     return urls
 
