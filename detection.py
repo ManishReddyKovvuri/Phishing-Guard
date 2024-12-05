@@ -12,22 +12,17 @@ import pandas as pd
 
 
 
-def fake_detect(uuid_text: FakeDetectionIn):
+def fake_detect(uuid_text):
     try :
-        url_pattern = r"https?://\S+|www\.\S+|ftp://\S+|\S+\.\S+/\S+"
-        uuid_text.text = re.findall(url_pattern, uuid_text.text)
-        if uuid_text.text is None:
-            raise HTTPException(status_code=404, detail={"Could not find URL in the text you sent"})
-        uuid_text.text = uuid_text.text[0]
         _dict = {}
-        _dict["original_url"] = str(uuid_text.text)
-        check, _original_url = get_redirected_url(str(uuid_text.text))
+        _dict["original_url"] = str(uuid_text)
+        check, _original_url = get_redirected_url(str(uuid_text))
         if _original_url == "data:,":
-            _original_url = uuid_text.text
+            _original_url = uuid_text
         if not check:
-            print(f"Selenium Could not load the Site 😞'{uuid_text.text}'")
-            _original_url = uuid_text.text
-        print(f"Redirect Found : '{uuid_text.text}'")
+            print(f"Selenium Could not load the Site 😞'{uuid_text}'")
+            _original_url = uuid_text
+        print(f"Redirect Found : '{uuid_text}'")
         _dict["long_url"] = _original_url 
         parsed_hostname = urlparse(_original_url).netloc
         parsed_port = urlparse(_original_url).port
@@ -56,10 +51,18 @@ def fake_detect(uuid_text: FakeDetectionIn):
 
 
         _dict["ModelPrediction"] = "Legit Site" if _pred == 0 else "Fake"
-        response = FakeDetectionResponse.parse_obj(_dict)
+        _dict["Recommendation"] = ["hi"]
+        # response = FakeDetectionResponse.model_validate(_dict)
+        response = FakeDetectionResponse.model_validate(_dict)
         response.provide_recommendations()
+
+        for i in response.Recommendation:
+            print(i)
+
+
         return (response)
     except Exception as e:
+        print( "exception found : "+e)
         return False
     
     

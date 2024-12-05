@@ -26,18 +26,13 @@ try:
         print("No unread emails found. Ending execution.")
         raise Exception("No unread emails found. Ending execution.")
         
-    response_emails = {email.from_address: False for email in unread_emails}
+    response_emails = {email.from_address: False for email in unread_emails} #TODO change the Dict key value ( if multiple emails are from same person(email id) it gets overwritten )
     
 
 
     
     
     for email in unread_emails :
-    # icloudemail = ICloudEmail()
-    # icloudemail.from_address ="--@gmail.com"
-    # icloudemail.subject = " babai"
-    # icloudemail.body = "https://www.youtube.com/watch?v=23yVLxPvRfY, ahfdsgkajgflasfg  https://mail.google.com/mail/u/0/#inbox "# parse_email
-    # print("="*50)
         email.urls_found["URLs"] = getUrls(email.body)
         for i in email.urls_found["URLs"] :
             email.urls_found["report"].append(fake_detect(i)) #TODO change parameter to fakedectecin object
