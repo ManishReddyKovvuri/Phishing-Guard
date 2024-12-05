@@ -175,42 +175,130 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
     :return: A string representing the email body.
     """
     try :
-        # Initialize the email body
-        response_body = f"Subject: {icloud_email.subject}\n"
-        response_body += f"From: {icloud_email.from_address}\n\n"
-        response_body += f"Hello,\n\nWe have analyzed the email body and found the following results:\n\n"
+        response_body = f"""
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    background-color: #f4f4f4;
+                    padding: 20px;
+                }}
+                .container {{
+                    max-width: 600px;
+                    margin: auto;
+                    background: #fff;
+                    padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                }}
+                .header {{
+                    text-align: center;
+                    padding: 10px 0;
+                    border-bottom: 1px solid #e0e0e0;
+                }}
+                .header h1 {{
+                    margin: 0;
+                    font-size: 24px;
+                    color: #333;
+                }}
+                .content {{
+                    margin: 20px 0;
+                }}
+                .content p {{
+                    margin: 10px 0;
+                }}
+                .content ul {{
+                    padding-left: 20px;
+                }}
+                .footer {{
+                    text-align: center;
+                    padding: 10px 0;
+                    border-top: 1px solid #e0e0e0;
+                    color: #666;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Phishing Detection Report</h1>
+                </div>
+                <div class="content">
+                    <p><strong>Subject:</strong> {icloud_email.subject}</p>
+                    <p><strong>From:</strong> {icloud_email.from_address}</p>
+                    <p>Hello,</p>
+                    <p>We have analyzed the email body and found the following results:</p>
+        """
 
         if not icloud_email.urls_found["URLs"]:
-            response_body += "No URLs were found in the email body. The content seems safe.\n"
+            response_body += """
+                    <p><strong>No URLs were found in the email body. The content seems safe.</strong></p>
+            """
         else:
-            response_body += f"We identified {len(icloud_email.urls_found['URLs'])} link(s) in the email body:\n\n"
+            response_body += f"""
+                    <p><strong>We identified {len(icloud_email.urls_found['URLs'])} link(s) in the email body:</strong></p>
+                    <ul>
+            """
             
             for i, (url, report) in enumerate(zip(icloud_email.urls_found["URLs"], icloud_email.urls_found["report"]), start=1):
                 # Generate recommendations for the current URL
                 report.provide_recommendations()
 
                 # Add URL details to the response body
-                response_body += f"Link {i}: {url}\n"
-                response_body += f"    Expanded URL: {report.long_url}\n"
-                response_body += f"    SSL Certificate: {'Valid' if report.ssl_cert.isSSLAvailable else 'Invalid'}\n"
-                response_body += f"    Host Name: {report.host_name}\n"
-                response_body += f"    Port: {report.port}\n"
-                response_body += f"    Model Prediction: {report.ModelPrediction}\n"
-                response_body += f"    Security Features:\n"
-                response_body += f"        URL Length: {report.features.length_url}\n"
-                response_body += f"        '=' Characters: {report.features.nb_eq}\n"
-                response_body += f"        Digit Ratio: {report.features.ratio_digits_url}\n"
-                response_body += f"        Domain Age: {report.features.domain_age} days\n"
-                response_body += f"        Page Rank: {report.features.page_rank}\n\n"
-
-                # Add recommendations for the URL
-                response_body += f"    Recommendations:\n"
+                response_body += f"""
+                        <li>
+                            <p><strong>Link {i}:</strong> {url}</p>
+                            <ul>
+                                <li><strong>Expanded URL:</strong> {report.long_url}</li>
+                                <li><strong>SSL Certificate:</strong> {'Valid' if report.ssl_cert.isSSLAvailable else 'Invalid'}</li>
+                                <li><strong>Host Name:</strong> {report.host_name}</li>
+                                <li><strong>Port:</strong> {report.port}</li>
+                                <li><strong>Model Prediction:</strong> {report.ModelPrediction}</li>
+                                <li><strong>Security Features:</strong>
+                                    <ul>
+                                        <li>URL Length: {report.features.length_url}</li>
+                                        <li>'=' Characters: {report.features.nb_eq}</li>
+                                        <li>Digit Ratio: {report.features.ratio_digits_url}</li>
+                                        <li>Domain Age: {report.features.domain_age} days</li>
+                                        <li>Page Rank: {report.features.page_rank}</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Recommendations:</strong>
+                                    <ul>
+                """
+                
                 for recommendation in report.Recommendation:
-                    response_body += f"        - {recommendation}\n"
-                response_body += "\n"
-        
-        response_body += "Thank you for using our phishing detection service.\n"
-        response_body += "Stay safe,\nThe Phishing Guard Team"
+                    response_body += f"""
+                                        <li>{recommendation}</li>
+                    """
+                
+                response_body += """
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                """
+            
+            response_body += """
+                    </ul>
+            """
+
+        response_body += """
+                    <p>Thank you for using our phishing detection service.</p>
+                    <p>Stay safe,<br><strong>The Phishing Guard Team</strong></p>
+                </div>
+                <div class="footer">
+                    <p>&copy; {datetime.now().year} Phishing Guard. All rights reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+
 
         # Assign the generated response to the email body attribute
         icloud_email.response_email_body = response_body
