@@ -300,6 +300,6 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
 
         # Assign the generated response to the email body attribute
         icloud_email.response_email_body = response_body
-        return response_body
+        return icloud_email.response_email_body
     except :
         return False

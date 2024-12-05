@@ -111,7 +111,7 @@ class ICloudEmail():
         self.body = body
         self.urls_found = {
             "URLs": [],
-            "report": [FakeDetectionResponse]#TODO default to false
+            "report": []#TODO default to false
         }
         
 
