@@ -171,7 +171,7 @@ def read_unread_emails(mail, email_id):
 def generate_response_body(icloud_email: ICloudEmail) -> str:
     """
     Generates a response email body based on the URLs found and their analysis.
-    :param icloud_email: An instance of ICloudEmail containing URLs and reports.
+    :param icloud_email: An instance of ICloudEmail containing URLs and report.
     :return: A string representing the email body.
     """
     try :
@@ -224,7 +224,7 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>Phishing Detection Report</h1>
+                    <h1>Phishing Detection report</h1>
                 </div>
                 <div class="content">
                     <p><strong>Subject:</strong> {icloud_email.subject}</p>
@@ -240,12 +240,10 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
         else:
             response_body += f"""
                     <p><strong>We identified {len(icloud_email.urls_found['URLs'])} link(s) in the email body:</strong></p>
-                    <ul>
-            """
-            
+                    <ul>"""
             for i, (url, report) in enumerate(zip(icloud_email.urls_found["URLs"], icloud_email.urls_found["report"]), start=1):
                 # Generate recommendations for the current URL
-                report.provide_recommendations()
+                report.provide_recommendations()# TODO this function cannot be called with report. It need a object of class FDR
 
                 # Add URL details to the response body
                 response_body += f"""
