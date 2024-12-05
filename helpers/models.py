@@ -1,5 +1,6 @@
 from typing import List, Optional, Annotated, Any, Dict
 from uuid import UUID
+import datetime
 
 from pydantic import BaseModel, AfterValidator, model_validator, HttpUrl
 
@@ -75,7 +76,7 @@ class FakeDetectionResponse(BaseModel):
     host_name: str
     port: int
     ModelPrediction: str
-    Recommendation : List[ str]
+    Recommendation : List[ str] =[]
     def provide_recommendations(self):
         isSSLAvailable = self.ssl_cert.isSSLAvailable
         if self.features.length_url > 100:
@@ -105,10 +106,12 @@ class FakeDetectionIn(BaseModel):
 
 
 class ICloudEmail():
-    def __init__(self, from_address: str ='', subject: str='', body: str=''):
+    def __init__(self, from_address: str ='', subject: str='', body: str='', sent_time= datetime):
         self.from_address = from_address
         self.subject = subject
         self.body = body
+        self.sent_time= sent_time
+        
         self.urls_found = {
             "URLs": [],
             "report": []#TODO default to false

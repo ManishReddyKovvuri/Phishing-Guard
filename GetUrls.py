@@ -1,6 +1,8 @@
 import re
 import email
+from email.utils import parsedate_to_datetime
 from email.header import decode_header
+import datetime
 from detection import fake_detect
 from helpers.models import FakeDetectionIn,FakeDetectionResponse, ICloudEmail
 
@@ -151,10 +153,20 @@ def read_unread_emails(mail, email_id):
             print(f"Error decoding body for email {email_id}: {e}")
             body = "(Error Reading Body)"
 
+        try:
+            date_raw = msg.get("Date")
+            if date_raw:
+                sent_time = parsedate_to_datetime(date_raw)
+            else:
+                sent_time = None
+        except Exception as e:
+            print(f"Error decoding date for email {email_id}: {e}")
+            sent_time = None
+
         print("/=\//" * 50)
         print(f"Subject: {subject}")
         print(f"From: {from_address}")
-        print(f"Body:\n{body}\n")
+        print(f"Sent Time : {sent_time}")
         print("=" * 50)
 
         # Create and return the email object
@@ -162,6 +174,7 @@ def read_unread_emails(mail, email_id):
         icloudemail.body = body
         icloudemail.subject = subject
         icloudemail.from_address = from_address
+        icloudemail.sent_time =sent_time
         return icloudemail
 
     except Exception as e:
@@ -289,7 +302,7 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
                     <p>Stay safe,<br><strong>The Phishing Guard Team</strong></p>
                 </div>
                 <div class="footer">
-                    <p>&copy; {datetime.now().year} Phishing Guard. All rights reserved.</p>
+                    <p>&copy; 2024  Phishing Guard. All rights reserved.</p>
                 </div>
             </div>
         </body>

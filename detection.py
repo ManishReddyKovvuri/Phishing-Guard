@@ -20,7 +20,7 @@ def fake_detect(uuid_text):
         if _original_url == "data:,":
             _original_url = uuid_text
         if not check:
-            print(f"Selenium Could not load the Site 😞'{uuid_text}'")
+            print(f"Selenium Could not load the Site 😞'{uuid_text}'") #TODO send the reason back to mail.py for template
             _original_url = uuid_text
         print(f"Redirect Found : '{uuid_text}'")
         _dict["long_url"] = _original_url 
@@ -51,27 +51,12 @@ def fake_detect(uuid_text):
 
 
         _dict["ModelPrediction"] = "Legit Site" if _pred == 0 else "Fake"
-        _dict["Recommendation"] = ["hi"]
-        # response = FakeDetectionResponse.model_validate(_dict)
+
         response = FakeDetectionResponse.model_validate(_dict)
-        response.provide_recommendations()
-
-        for i in response.Recommendation:
-            print(i)
-
-
-        return (response)
+        # response.provide_recommendations()
+        return (response)   
+    
     except Exception as e:
-        print( "exception found : "+e)
-        return False
-    
-    
-
-
-fake_detection_input = FakeDetectionIn(
-    uuid= 'e4eaaaf2c9b648b3b0e4b5b4b3a9a2bb',  # Generate a new UUID
-    text= "https://www.youtube.com/watch?v=23yVLxPvRfY")
-
-# result=fake_detect(fake_detection_input)
-# recommendations = provide_recommendations(result)
+        print( "exception found : ",e)
+        return False #TODO  change two a flag object with reason
 
