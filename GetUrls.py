@@ -256,35 +256,38 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
                     <ul>"""
             for i, (url, report) in enumerate(zip(icloud_email.urls_found["URLs"], icloud_email.urls_found["report"]), start=1):
                 # Generate recommendations for the current URL
-                report.provide_recommendations()# TODO this function cannot be called with report. It need a object of class FDR
+                if report:
+                    report.provide_recommendations()# TODO this function cannot be called with report. It need a object of class FDR
 
-                # Add URL details to the response body
-                response_body += f"""
-                        <li>
-                            <p><strong>Link {i}:</strong> {url}</p>
-                            <ul>
-                                <li><strong>Expanded URL:</strong> {report.long_url}</li>
-                                <li><strong>SSL Certificate:</strong> {'Valid' if report.ssl_cert.isSSLAvailable else 'Invalid'}</li>
-                                <li><strong>Host Name:</strong> {report.host_name}</li>
-                                <li><strong>Port:</strong> {report.port}</li>
-                                <li><strong>Model Prediction:</strong> {report.ModelPrediction}</li>
-                                <li><strong>Security Features:</strong>
-                                    <ul>
-                                        <li>URL Length: {report.features.length_url}</li>
-                                        <li>'=' Characters: {report.features.nb_eq}</li>
-                                        <li>Digit Ratio: {report.features.ratio_digits_url}</li>
-                                        <li>Domain Age: {report.features.domain_age} days</li>
-                                        <li>Page Rank: {report.features.page_rank}</li>
-                                    </ul>
-                                </li>
-                                <li><strong>Recommendations:</strong>
-                                    <ul>
-                """
-                
-                for recommendation in report.Recommendation:
+                    # Add URL details to the response body
                     response_body += f"""
-                                        <li>{recommendation}</li>
+                            <li>
+                                <p><strong>Link {i}:</strong> {url}</p>
+                                <ul>
+                                    <li><strong>Expanded URL:</strong> {report.long_url}</li>
+                                    <li><strong>SSL Certificate:</strong> {'Valid' if report.ssl_cert.isSSLAvailable else 'Invalid'}</li>
+                                    <li><strong>Host Name:</strong> {report.host_name}</li>
+                                    <li><strong>Port:</strong> {report.port}</li>
+                                    <li><strong>Model Prediction:</strong> {report.ModelPrediction}</li>
+                                    <li><strong>Security Features:</strong>
+                                        <ul>
+                                            <li>URL Length: {report.features.length_url}</li>
+                                            <li>'=' Characters: {report.features.nb_eq}</li>
+                                            <li>Digit Ratio: {report.features.ratio_digits_url}</li>
+                                            <li>Domain Age: {report.features.domain_age} days</li>
+                                            <li>Page Rank: {report.features.page_rank}</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Recommendations:</strong>
+                                        <ul>
                     """
+                    
+                    for recommendation in report.Recommendation:
+                        response_body += f"""
+                                            <li>{recommendation}</li>
+                        """
+                else:
+                    response_body+=f"""<p><strong>Could not process {i}:</strong> {url}</p>"""
                 
                 response_body += """
                                     </ul>
