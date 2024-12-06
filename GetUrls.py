@@ -5,6 +5,7 @@ from email.header import decode_header
 import datetime
 from detection import fake_detect
 from helpers.models import FakeDetectionIn,FakeDetectionResponse, ICloudEmail
+from helpers.logger import logger
 
 
 def getUrls(text):
@@ -74,10 +75,11 @@ def parse_email(msg_data):
 def check_for_unread(mail):
     """Check for unread emails and return a list of email objects."""
     try:
+        logger.info(f"Looking up the UNREAD emails")
         mail.select("inbox")  # Select the inbox
         status, messages = mail.search(None, "UNSEEN")
         if messages == [b'']:  # No unread emails
-            print("No unread emails found.")
+            logger.debug("No New Emails found exiting the process")
             return []
 
         email_ids = messages[0].split()
@@ -87,21 +89,19 @@ def check_for_unread(mail):
             if email_obj:  # Only append if processing succeeded
                 unread_emails.append(email_obj)
         return unread_emails
-
     except Exception as e:
-        print(f"Error in checking for unread emails: {e}")
+        logger.error(f"Error in checking for unread emails: {e}")
         return []
 
 def read_unread_emails(mail, email_id):
     """Fetch and read a single unread email."""
     try:
         email_id = email_id.decode()  # Decode the email ID
-        print(f"Fetching email ID: {email_id}")
-
+        logger.debug(f"Fetching email ID: {email_id}")
         # Fetch the full email content
         status, msg_data = mail.fetch(email_id, "(BODY[])")
         if not msg_data or msg_data[0] == b'' or b'()' in msg_data[0]:
-            print(f"No content found for email ID {email_id}. Skipping.")
+            logger.debug(f"No content found for email ID {email_id}. Skipping.")
             return False
 
         raw_email = b''.join(
@@ -109,7 +109,7 @@ def read_unread_emails(mail, email_id):
         )
 
         if not raw_email:
-            print(f"No content found for email ID {email_id}. Skipping.")
+            logger.debug(f"No content found for email ID {email_id}. Skipping.")
             return False
 
         # Parse the email
@@ -125,14 +125,14 @@ def read_unread_emails(mail, email_id):
             else:
                 subject = "(No Subject)"
         except Exception as e:
-            print(f"Error decoding subject for email {email_id}: {e}")
+            logger.error(f"Error decoding subject for email {email_id}: {e}", exc_info=True)
             subject = "(Error Reading Subject)"
 
         # Decode the from address
         try:
             from_address = msg.get("From") or "(Unknown Sender)"
         except Exception as e:
-            print(f"Error decoding 'From' address for email {email_id}: {e}")
+            logger.error(f"Error decoding 'From' address for email {email_id}: {e}", exc_info=True)
             from_address = "(Error Reading Sender)"
 
         # Decode the body
@@ -150,7 +150,7 @@ def read_unread_emails(mail, email_id):
             if not body:
                 body = "(No Body Content)"
         except Exception as e:
-            print(f"Error decoding body for email {email_id}: {e}")
+            logger.error(f"Error decoding body for email {email_id}: {e}", exc_info=True)
             body = "(Error Reading Body)"
 
         try:
@@ -160,13 +160,13 @@ def read_unread_emails(mail, email_id):
             else:
                 sent_time = None
         except Exception as e:
-            print(f"Error decoding date for email {email_id}: {e}")
+            logger.error(f"Error decoding date for email {email_id}: {e}", exc_info=True)
             sent_time = None
 
-        print("/=\//" * 50)
-        print(f"Subject: {subject}")
-        print(f"From: {from_address}")
-        print(f"Sent Time : {sent_time}")
+        print("=" * 50)
+        logger.debug(f"Subject: {subject}")
+        logger.debug(f"From: {from_address}")
+        logger.debug(f"Sent Time : {sent_time}")
         print("=" * 50)
 
         # Create and return the email object
@@ -178,7 +178,7 @@ def read_unread_emails(mail, email_id):
         return icloudemail
 
     except Exception as e:
-        print(f"Error reading email {email_id}: {e}")
+        logger.error(f"Error reading email {email_id}: {e}", exc_info=True)
         return False
 
 def generate_response_body(icloud_email: ICloudEmail) -> str:
@@ -314,5 +314,6 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
         # Assign the generated response to the email body attribute
         icloud_email.response_email_body = response_body
         return icloud_email.response_email_body
-    except :
+    except Exception as e:
+        print(f'Exception found : {e}')
         return False

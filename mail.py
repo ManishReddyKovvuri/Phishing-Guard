@@ -10,11 +10,15 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import uuid
+from helpers.logger import logger
 
 
 
 try:
+    logger.info("New Session ========================================================================================")
     config =load_config()
+    logger.info(f"Loaded Info from Config File'")
+
     # Account credentials
     username = config.get("EMAIL")
     password = config.get("PASS_KEY")
@@ -23,23 +27,32 @@ try:
 
     mail = imaplib.IMAP4_SSL(imap_server)
     mail.login(username, password) # Connect to the server
+    logger.info(f"Successfully connected to Imap_Server'")
+
 
     unread_emails = check_for_unread(mail) #list of icloud email objects
     if not unread_emails:
-        print("No unread emails found. Ending execution.")
+        logger.debug("No unread emails found. Ending execution.")
         raise Exception("No unread emails found. Ending execution.")
+    else :
+        logger.debug(f"Found Unread Emails : {len(unread_emails)}")
+
         
     # response_emails = {email.from_address: False for email in unread_emails} #TODO change the Dict key value ( if multiple emails are from same person(email id) it gets overwritten )
-    response_emails = {f"ID_{i+1}": email for i, email in enumerate(unread_emails)}
-
+    response_emails = {str(uuid.uuid4()) : email for i, email in enumerate(unread_emails)}
+ 
     response_body = {}
 
 
     
     
     for id, email in response_emails.items() :
+        logger.info(f"Processing URLS : {id}_{email.from_address} with subject '{email.subject}'")
         email.urls_found["URLs"] = getUrls(email.body)
+
+        # logger.debug(f"URLS Found for {id}_{email.from_address} : {k}")
         for i in email.urls_found["URLs"] :
+            logger.debug(f"Processing report for URL : {i}  within the email {id}_{email.from_address}")
             email.urls_found["report"].append(fake_detect(i)) #TODO change parameter to fakedectecin object
             # responsebody= generate_response_body(email) # added directly into dict 
         # response_emails[id]  = generate_response_body(email)
@@ -50,9 +63,12 @@ try:
     smtp_user = config.get("EMAIL")
     smtp_password = config.get("PASS_KEY")
     from_email = config.get("FROM")
+
+    logger.debug(f"Connecting to SMTP SERVER")
     server = smtplib.SMTP(smtp_server, smtp_port)
     server.starttls()
     server.login(smtp_user, smtp_password)
+    logger.debug(f"Login Successful")
 
 
     for id, email in response_emails.items():
@@ -72,7 +88,7 @@ try:
             # Send the email
             
             server.send_message(msg)
-            print("mail sent")
+            logger.debug(f"mail sent to {to_email} from  {from_email} Successfully.")
             
             #TODO send report 
             continue
@@ -83,8 +99,11 @@ try:
     server.quit()
     #TODO implement wait period
 except imaplib.IMAP4.error as e:
-    print("IMAP error:", e)
+    logger.error("IMAP error:", e, exc_info=True)
 except socket.gaierror as e:
-    print("Socket error:", e)
+    logger.error("Socket error:", e, exc_info=True)
 except Exception as e:
-    print("Error:", e)
+    logger.error("Error:", exc_info= True)
+finally:
+    logger.info("Session completed ========================================================================================")
+
