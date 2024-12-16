@@ -93,6 +93,7 @@ try:
             #TODO send report 
             continue
         else :
+            logger.debug(f"Could not sned {to_email} from  {from_email} Successfully.")
             #TODO sorry cant read the body email
             continue
 

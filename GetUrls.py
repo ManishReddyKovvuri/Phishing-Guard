@@ -305,7 +305,7 @@ def generate_response_body(icloud_email: ICloudEmail) -> str:
                     <p>Stay safe,<br><strong>The Phishing Guard Team</strong></p>
                 </div>
                 <div class="footer">
-                    <p>&copy; 2024  Phishing Guard. All rights reserved.</p>
+                    <p>&copy; 2898AD  Phishing Guard. All rights are not reserved.</p>
                 </div>
             </div>
         </body>
