@@ -1,3 +1,5 @@
 __pycache__/
 venv/*
 config.json
+.idea/*
+email_processor.log
