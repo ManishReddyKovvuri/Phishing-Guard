@@ -5,7 +5,7 @@ python-whois==0.8.0
 tldextract==5.0.1
 scikit-learn==1.2.2
 aiohttp==3.8.6
-webdriver-manger==4.0.2
+webdriver-manager==4.0.2
 pydantic==2.10.4
 pydantic_core==2.27.2
 pyOpenSSL==24.3.0
