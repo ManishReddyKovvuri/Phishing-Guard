@@ -1,5 +1,4 @@
 selenium==4.27.1
-pyOpenSSL==23.3.0
 SQLAlchemy==1.4.47
 python-whois==0.8.0
 tldextract==5.0.1
