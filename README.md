@@ -13,8 +13,6 @@ PhishingGuard is an advanced tool designed to detect phishing or scam links in e
 - **Cloud-Based Solution:** No need for software installation, accessible from any device.
 - **Privacy-Focused:** Does not store user data, ensuring security and confidentiality.
 
-## License
-This project is licensed under the [MIT License](LICENSE). Feel free to modify and distribute it as per the license terms.
 
 ## Contact
 For any queries or suggestions, reach out via:
